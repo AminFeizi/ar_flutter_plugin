@@ -153,8 +153,9 @@ class _LocalAndWebObjectsWidgetState extends State<LocalAndWebObjectsWidget> {
       this.localObjectNode = null;
     } else {
       var newNode = ARNode(
-          type: NodeType.localGLTF2,
-          uri: "Models/Chicken_01/Chicken_01.gltf",
+          type: NodeType.fileSystemAppFolderGLB,
+          // uri: "Models/Chicken_01/DamagedHelmet.gltf",
+          uri: "Models/Chicken_01/louis_hanson_barber_chair.glb",
           scale: Vector3(0.2, 0.2, 0.2),
           position: Vector3(0.0, 0.0, 0.0),
           rotation: Vector4(1.0, 0.0, 0.0, 0.0));
@@ -185,7 +186,7 @@ class _LocalAndWebObjectsWidgetState extends State<LocalAndWebObjectsWidget> {
     } else {
       var newNode = ARNode(
           type: NodeType.fileSystemAppFolderGLB,
-          uri: "LocalDuck.glb",
+          uri: "louis_hanson_barber_chair.glb",
           scale: Vector3(0.2, 0.2, 0.2));
       //Alternative to use type fileSystemAppFolderGLTF2:
       //var newNode = ARNode(

@@ -107,9 +107,12 @@ class _ObjectsOnPlanesWidgetState extends State<ObjectsOnPlanesWidget> {
         this.anchors.add(newAnchor);
         // Add note to anchor
         var newNode = ARNode(
-            type: NodeType.webGLB,
+
+            type: NodeType.localGLTF2,
             uri:
-                "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Duck/glTF-Binary/Duck.glb",
+                // "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Duck/glTF-Binary/Duck.glb",
+                "https://huggingface.co/spaces/rajkumar1611/01-3DModel-GradioDemo/blob/33428b234bf914ac88ec47c61d502464ebda3e7b/files/Duck.glb",
+
             scale: Vector3(0.2, 0.2, 0.2),
             position: Vector3(0.0, 0.0, 0.0),
             rotation: Vector4(1.0, 0.0, 0.0, 0.0));
