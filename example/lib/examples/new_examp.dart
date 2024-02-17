@@ -17,6 +17,7 @@ import 'package:flutter_archive/flutter_archive.dart';
 
 class LocalAndWebObjectsWidget1 extends StatefulWidget {
   LocalAndWebObjectsWidget1({Key? key}) : super(key: key);
+
   @override
   _LocalAndWebObjectsWidgetState createState() =>
       _LocalAndWebObjectsWidgetState();
@@ -25,8 +26,10 @@ class LocalAndWebObjectsWidget1 extends StatefulWidget {
 class _LocalAndWebObjectsWidgetState extends State<LocalAndWebObjectsWidget1> {
   ARSessionManager? arSessionManager;
   ARObjectManager? arObjectManager;
+
   //String localObjectReference;
   ARNode? localObjectNode;
+
   //String webObjectReference;
   ARNode? webObjectNode;
   ARNode? fileSystemNode;
@@ -48,7 +51,8 @@ class _LocalAndWebObjectsWidgetState extends State<LocalAndWebObjectsWidget1> {
             child: Stack(children: [
               ARView(
                 onARViewCreated: onARViewCreated,
-                planeDetectionConfig: PlaneDetectionConfig.horizontalAndVertical,
+                planeDetectionConfig: PlaneDetectionConfig
+                    .horizontalAndVertical,
               ),
               Align(
                   alignment: FractionalOffset.bottomCenter,
@@ -60,7 +64,8 @@ class _LocalAndWebObjectsWidgetState extends State<LocalAndWebObjectsWidget1> {
                       children: [
                         ElevatedButton(
                             onPressed: onFileSystemObjectAtOriginButtonPressed,
-                            child: Text("Add/Remove Filesystem\nObject at Origin")),
+                            child: Text(
+                                "Add/Remove Filesystem\nObject at Origin")),
                       ],
                     ),
 
@@ -90,8 +95,7 @@ class _LocalAndWebObjectsWidgetState extends State<LocalAndWebObjectsWidget1> {
             ])));
   }
 
-  void onARViewCreated(
-      ARSessionManager arSessionManager,
+  void onARViewCreated(ARSessionManager arSessionManager,
       ARObjectManager arObjectManager,
       ARAnchorManager arAnchorManager,
       ARLocationManager arLocationManager) {
@@ -110,7 +114,12 @@ class _LocalAndWebObjectsWidgetState extends State<LocalAndWebObjectsWidget1> {
     //Download model to file system
     httpClient = new HttpClient();
     _downloadFile(
-        "https://firebasestorage.googleapis.com/v0/b/stridenseek.appspot.com/o/files%2FAR_Models%2FAlien.glb?alt=media&token=fffd9db1-dcc5-4dae-bb1f-95d7ea867817","Alien.glb");
+      // "https://firebasestorage.googleapis.com/v0/b/stridenseek.appspot.com/o/files%2FAR_Models%2FAlien.glb?alt=media&token=fffd9db1-dcc5-4dae-bb1f-95d7ea867817","Alien.glb"
+      "https://s31.picofile.com/d/8470873534/d054dc5d-ed07-4a2f-971e-2023ebcd51f8/egg_chair.glb","egg_chair.glb"
+        // "https://github.com/AminAlizadeh-Dev/glb_file/blob/main/egg-chair.glb",
+        "egg_chair.glb"
+
+    );
     // Alternative to use type fileSystemAppFolderGLTF2:
     //_downloadAndUnpack(
     //    "https://drive.google.com/uc?export=download&id=1fng7yiK0DIR0uem7XkV2nlPSGH9PysUs",
@@ -118,14 +127,19 @@ class _LocalAndWebObjectsWidgetState extends State<LocalAndWebObjectsWidget1> {
   }
 
   Future<File> _downloadFile(String url, String filename) async {
-    var request = await httpClient?.getUrl(Uri.parse(url));
-    var response = await request?.close();
-    var bytes = await consolidateHttpClientResponseBytes(response!);
-    String dir = (await getApplicationDocumentsDirectory()).path;
-    File file = new File('$dir/$filename');
-    await file.writeAsBytes(bytes);
-    print("Downloading finished, path: " + '$dir/$filename');
-    return file;
+    try {
+      var request = await httpClient?.getUrl(Uri.parse(url));
+      var response = await request?.close();
+      var bytes = await consolidateHttpClientResponseBytes(response!);
+      String dir = (await getApplicationDocumentsDirectory()).path;
+      File file = new File('$dir/$filename');
+      await file.writeAsBytes(bytes);
+      print("Downloading finished, path: " + '$dir/$filename');
+      return file;
+    } catch (e) {
+      debugPrint('$e');
+      rethrow;
+    }
   }
 
   Future<void> _downloadAndUnpack(String url, String filename) async {
@@ -153,12 +167,13 @@ class _LocalAndWebObjectsWidgetState extends State<LocalAndWebObjectsWidget1> {
       this.localObjectNode = null;
     } else {
       var newNode = ARNode(
-          type: NodeType.localGLTF2,
-          uri: "Models/Chicken_01.gltf",
+          type: NodeType.fileSystemAppFolderGLB,
+          uri: "egg_chair.glb",
           scale: Vector3(0.2, 0.2, 0.2),
           position: Vector3(0.0, 0.0, 0.0),
           rotation: Vector4(1.0, 0.0, 0.0, 0.0));
-      bool didAddLocalNode = await this.arObjectManager?.addNode(newNode) ?? false;
+      bool didAddLocalNode = await this.arObjectManager?.addNode(newNode) ??
+          false;
       this.localObjectNode = (didAddLocalNode) ? newNode : null;
     }
   }
@@ -171,7 +186,10 @@ class _LocalAndWebObjectsWidgetState extends State<LocalAndWebObjectsWidget1> {
       var newNode = ARNode(
           type: NodeType.webGLB,
           uri:
-          "https://firebasestorage.googleapis.com/v0/b/stridenseek.appspot.com/o/files%2FAR_Models%2FAlien.glb?alt=media&token=fffd9db1-dcc5-4dae-bb1f-95d7ea867817",
+          // "https://firebasestorage.googleapis.com/v0/b/stridenseek.appspot.com/o/files%2FAR_Models%2FAlien.glb?alt=media&token=fffd9db1-dcc5-4dae-bb1f-95d7ea867817"
+          "https://s31.picofile.com/d/8470873534/d054dc5d-ed07-4a2f-971e-2023ebcd51f8/egg_chair.glb"
+          // "https://github.com/AminAlizadeh-Dev/glllb/blob/main/egg-chair.glb"
+          ,
           scale: Vector3(0.2, 0.2, 0.2));
       bool? didAddWebNode = await this.arObjectManager?.addNode(newNode);
       this.webObjectNode = (didAddWebNode ?? false) ? newNode : null;
@@ -185,7 +203,7 @@ class _LocalAndWebObjectsWidgetState extends State<LocalAndWebObjectsWidget1> {
     } else {
       var newNode = ARNode(
           type: NodeType.fileSystemAppFolderGLB,
-          uri: "Alien.glb",
+          uri: "egg_chair.glb",
           scale: Vector3(0.2, 0.2, 0.2));
       //Alternative to use type fileSystemAppFolderGLTF2:
       //var newNode = ARNode(

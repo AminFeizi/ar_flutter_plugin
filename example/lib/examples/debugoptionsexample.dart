@@ -2,10 +2,16 @@ import 'package:ar_flutter_plugin/managers/ar_location_manager.dart';
 import 'package:ar_flutter_plugin/managers/ar_session_manager.dart';
 import 'package:ar_flutter_plugin/managers/ar_object_manager.dart';
 import 'package:ar_flutter_plugin/managers/ar_anchor_manager.dart';
+import 'package:ar_flutter_plugin_example/examples/localandwebobjectsexample.dart';
+import 'package:ar_flutter_plugin_example/examples/objectsonplanesexample.dart';
 import 'package:flutter/material.dart';
 import 'package:ar_flutter_plugin/ar_flutter_plugin.dart';
 import 'package:ar_flutter_plugin/datatypes/config_planedetection.dart';
-
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  // copyAssetModelsToDocumentDirectory();
+  runApp(MaterialApp(home: LocalAndWebObjectsWidget(),));
+}
 class DebugOptionsWidget extends StatefulWidget {
   DebugOptionsWidget({Key? key}) : super(key: key);
   @override

@@ -46,10 +46,20 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - Images/triangle.png
-    - Models/Chicken_01/
     - assets/
-  #   - images/a_dot_ham.jpeg
+    - assets/Bed/
+    - assets/Bookshelve/
+    - assets/Carpet/
+    - assets/Chair/
+    - assets/Clock/
+    - assets/Decorating/
+    - assets/Electronic_Device/
+    - assets/Lampshade/
+    - assets/Mirror/
+    - assets/Sofa/
+    - assets/Table/
+    - assets/Wash_Basin/
+  #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

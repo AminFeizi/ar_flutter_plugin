@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:ar_flutter_plugin_example/examples/new_examp.dart';
 import 'package:ar_flutter_plugin_example/examples/objectsonplanesexample.dart';
+import 'package:ar_flutter_plugin_example/glb_list_page.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -7,12 +11,14 @@ import 'package:ar_flutter_plugin/ar_flutter_plugin.dart';
 
 import 'package:ar_flutter_plugin_example/examples/localandwebobjectsexample.dart';
 import 'package:ar_flutter_plugin_example/examples/debugoptionsexample.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'examples/objectgesturesexample.dart';
 import 'examples/screenshotexample.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  // copyAssetModelsToDocumentDirectory();
   runApp(MyApp());
 }
 
@@ -54,19 +60,77 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text(_title),
-        ),
-        body: Column(children: [
-          Text('Running on: $_platformVersion\n'),
-          Expanded(
-            child: ExampleList(),
-          ),
-        ]),
-      ),
+      home: GlbListPage(),
     );
   }
+}
+Future<void> copyAssetModelsToDocumentDirectory() async {
+  // CHANGE THESE TO YOUR ASSET FILES
+  List<String> filesToCopy = [
+    "assets/Bed/bed1.glb",
+    "assets/Bed/bed2.glb",
+    // *-*-*-*-
+    "assets/Bookshelve/bookcase.glb",
+    "assets/Bookshelve/bookcase_tall_with_books.glb",
+    // *-*-*-*-
+    "assets/Carpet/antique_turkish_runner_carpet.glb",
+    "assets/Carpet/old_persian_tudeshk_carpet.glb",
+    // *-*-*-*-
+    "assets/Chair/basket_swing_chair.glb",
+    "assets/Chair/chair.glb",
+    // *-*-*-*-
+    "assets/Clock/chronograph_watch_mudmaster.glb",
+    "assets/Clock/clock.glb",
+    // *-*-*-*-
+    "assets/Decorating/gothic_chalice.glb",
+    "assets/Decorating/hussar_on_horseback.glb",
+    // *-*-*-*-
+    "assets/Electronic_Device/3dObj.glb",
+    "assets/Electronic_Device/2010_flat_screen_tv.glb",
+    // *-*-*-*-
+    "assets/Lampshade/3d_pbr_decorative_dream_lampshade_transmissive.glb",
+    "assets/Lampshade/bowood_tref035.glb",
+    // *-*-*-*-
+    "assets/Mirror/desk_mirror.glb",
+    "assets/Mirror/honeycomb_mirror.glb",
+    // *-*-*-*-
+    "assets/Sofa/modern__sofa.glb",
+    "assets/Sofa/sofa.glb",
+    // *-*-*-*-
+    "assets/Table/antique_table.glb",
+    "assets/Table/chinese_lacquer_shanxi_console_table.glb",
+    // *-*-*-*-
+    "assets/Wash_Basin/arteco325_bath.glb",
+    "assets/Wash_Basin/basin.glb",
+  ];
+
+  // This getApplicationDocumentsDirectory call comes from the path_provider package
+  final Directory docDir = await getApplicationDocumentsDirectory();
+  final String docDirPath = docDir.path;
+
+  await Future.wait(
+    filesToCopy.map((String assetPath) async {
+      // Create a new file in the documents directory with the asset file name
+      String assetFilename = assetPath.split('/').last;
+      File file = File('$docDirPath/$assetFilename');
+
+      // Load the asset file from the assets folder
+      final assetBytes = await rootBundle.load(assetPath);
+      final buffer = assetBytes.buffer;
+
+      // Write the asset file to the new file in the documents directory
+      await file.writeAsBytes(
+        buffer.asUint8List(
+          assetBytes.offsetInBytes,
+          assetBytes.lengthInBytes,
+        ),
+      );
+
+      print("Copied $assetPath to ${file.path}");
+    }),
+  );
+
+  print("Finished copying files to app's documents directory");
 }
 
 class ExampleList extends StatelessWidget {
@@ -94,11 +158,11 @@ class ExampleList extends StatelessWidget {
               context,
               MaterialPageRoute(
                   builder: (context) => ObjectsOnPlanesWidget()))),
-      Example(
-          'Object Transformation Gestures',
-          'Rotate and Pan Objects',
-          () => Navigator.push(context,
-              MaterialPageRoute(builder: (context) => ObjectGesturesWidget()))),
+      // Example(
+      //     'Object Transformation Gestures',
+      //     'Rotate and Pan Objects',
+      //     () => Navigator.push(context,
+      //         MaterialPageRoute(builder: (context) => ObjectGesturesWidget()))),
       Example(
           'Screenshots',
           'Place 3D objects on planes and take screenshots',

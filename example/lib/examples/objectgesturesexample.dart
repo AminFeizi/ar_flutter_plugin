@@ -18,16 +18,21 @@ import 'package:vector_math/vector_math_64.dart';
 import 'dart:math';
 
 class ObjectGesturesWidget extends StatefulWidget {
-  ObjectGesturesWidget({Key? key}) : super(key: key);
+  ObjectGesturesWidget({Key? key,required this.glbFile}) : super(key: key);
   @override
   _ObjectGesturesWidgetState createState() => _ObjectGesturesWidgetState();
+  final String glbFile;
 }
 
 class _ObjectGesturesWidgetState extends State<ObjectGesturesWidget> {
   ARSessionManager? arSessionManager;
   ARObjectManager? arObjectManager;
   ARAnchorManager? arAnchorManager;
-
+  bool _showFeaturePoints = false;
+  bool _showPlanes = false;
+  bool _showWorldOrigin = false;
+  bool _showAnimatedGuide = true;
+  String _planeTexturePath = "Images/triangle.png";
   List<ARNode> nodes = [];
   List<ARAnchor> anchors = [];
 
@@ -53,6 +58,23 @@ class _ObjectGesturesWidgetState extends State<ObjectGesturesWidget> {
             // permissionPromptDescription: 'qweqweqwe',
             // permissionPromptParentalRestriction: 'asdqweqwe',
           ),
+            Align(
+              alignment: AlignmentDirectional(.8,.8),
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _showPlanes = true;
+                    updateSessionSettings();
+                  });
+                },
+                child: Container(
+                    decoration: BoxDecoration(
+                      color: Color(0xffffffff)
+                    ),
+                    child: Text('update')),
+              ),
+            )
+/*
           Align(
             alignment: FractionalOffset.bottomCenter,
             child: Row(
@@ -63,6 +85,7 @@ class _ObjectGesturesWidgetState extends State<ObjectGesturesWidget> {
                       child: Text("Remove Everything")),
                 ]),
           )
+*/
         ])));
   }
 
@@ -71,7 +94,7 @@ class _ObjectGesturesWidgetState extends State<ObjectGesturesWidget> {
       ARObjectManager arObjectManager,
       ARAnchorManager arAnchorManager,
       ARLocationManager arLocationManager) {
-    copyAssetModelsToDocumentDirectory();
+    // copyAssetModelsToDocumentDirectory();
     this.arSessionManager = arSessionManager;
     this.arObjectManager = arObjectManager;
     this.arAnchorManager = arAnchorManager;
@@ -79,8 +102,8 @@ class _ObjectGesturesWidgetState extends State<ObjectGesturesWidget> {
     this.arSessionManager!.onInitialize(
           showFeaturePoints: false,
           showPlanes: true,
-          customPlaneTexturePath: "Images/triangle.png",
-          showWorldOrigin: true,
+          // customPlaneTexturePath: "Images/triangle.png",
+          showWorldOrigin: false,
 
           handlePans: true,
           handleRotation: true,
@@ -105,38 +128,38 @@ class _ObjectGesturesWidgetState extends State<ObjectGesturesWidget> {
     });
     anchors = [];
   }
-  Future<void> copyAssetModelsToDocumentDirectory() async {
-    // CHANGE THESE TO YOUR ASSET FILES
-    List<String> filesToCopy = ["assets/office_chair.glb",];
-
-    // This getApplicationDocumentsDirectory call comes from the path_provider package
-    final Directory docDir = await getApplicationDocumentsDirectory();
-    final String docDirPath = docDir.path;
-
-    await Future.wait(
-      filesToCopy.map((String assetPath) async {
-        // Create a new file in the documents directory with the asset file name
-        String assetFilename = assetPath.split('/').last;
-        File file = File('$docDirPath/$assetFilename');
-
-        // Load the asset file from the assets folder
-        final assetBytes = await rootBundle.load(assetPath);
-        final buffer = assetBytes.buffer;
-
-        // Write the asset file to the new file in the documents directory
-        await file.writeAsBytes(
-          buffer.asUint8List(
-            assetBytes.offsetInBytes,
-            assetBytes.lengthInBytes,
-          ),
-        );
-
-        print("Copied $assetPath to ${file.path}");
-      }),
-    );
-
-    print("Finished copying files to app's documents directory");
-  }
+  // Future<void> copyAssetModelsToDocumentDirectory() async {
+  //   // CHANGE THESE TO YOUR ASSET FILES
+  //   List<String> filesToCopy = ["assets/office_chair.glb",];
+  //
+  //   // This getApplicationDocumentsDirectory call comes from the path_provider package
+  //   final Directory docDir = await getApplicationDocumentsDirectory();
+  //   final String docDirPath = docDir.path;
+  //
+  //   await Future.wait(
+  //     filesToCopy.map((String assetPath) async {
+  //       // Create a new file in the documents directory with the asset file name
+  //       String assetFilename = assetPath.split('/').last;
+  //       File file = File('$docDirPath/$assetFilename');
+  //
+  //       // Load the asset file from the assets folder
+  //       final assetBytes = await rootBundle.load(assetPath);
+  //       final buffer = assetBytes.buffer;
+  //
+  //       // Write the asset file to the new file in the documents directory
+  //       await file.writeAsBytes(
+  //         buffer.asUint8List(
+  //           assetBytes.offsetInBytes,
+  //           assetBytes.lengthInBytes,
+  //         ),
+  //       );
+  //
+  //       print("Copied $assetPath to ${file.path}");
+  //     }),
+  //   );
+  //
+  //   print("Finished copying files to app's documents directory");
+  // }
   Future<void> onPlaneOrPointTapped(
       List<ARHitTestResult> hitTestResults) async {
     var singleHitTestResult = hitTestResults.firstWhere(
@@ -155,8 +178,8 @@ class _ObjectGesturesWidgetState extends State<ObjectGesturesWidget> {
                 // "https://huggingface.co/spaces/rajkumar1611/01-3DModel-GradioDemo/blob/33428b234bf914ac88ec47c61d502464ebda3e7b/files/Duck.glb",
                 // 'office_chair.glb',
                 // 'files_Duck.glb',
-                'office_chair.glb',
-            scale: Vector3(0.2, 0.2, 0.2),
+               widget.glbFile,
+            scale: Vector3(0.5, 0.5, 0.5),
             position: Vector3(0.0, 0.0, 0.0),
             rotation: Vector4(1.0, 0.0, 0.0, 0.0));
         bool? didAddNodeToAnchor =
@@ -210,5 +233,13 @@ class _ObjectGesturesWidgetState extends State<ObjectGesturesWidget> {
     * (e.g. if you intend to share the nodes through the cloud)
     */
     //rotatedNode.transform = newTransform;
+  }
+  void updateSessionSettings() {
+    arSessionManager!.onInitialize(
+      showFeaturePoints: _showFeaturePoints,
+      showPlanes: _showPlanes,
+      customPlaneTexturePath: _planeTexturePath,
+      showWorldOrigin: _showWorldOrigin,
+    );
   }
 }
