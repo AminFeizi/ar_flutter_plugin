@@ -18,7 +18,8 @@ import 'package:vector_math/vector_math_64.dart';
 import 'dart:math';
 
 class ObjectGesturesWidget extends StatefulWidget {
-  ObjectGesturesWidget({Key? key,required this.glbFile}) : super(key: key);
+  ObjectGesturesWidget({Key? key, required this.glbFile}) : super(key: key);
+
   @override
   _ObjectGesturesWidgetState createState() => _ObjectGesturesWidgetState();
   final String glbFile;
@@ -42,6 +43,7 @@ class _ObjectGesturesWidgetState extends State<ObjectGesturesWidget> {
     arSessionManager!.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,22 +60,20 @@ class _ObjectGesturesWidgetState extends State<ObjectGesturesWidget> {
             // permissionPromptDescription: 'qweqweqwe',
             // permissionPromptParentalRestriction: 'asdqweqwe',
           ),
-            Align(
-              alignment: AlignmentDirectional(.8,.8),
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _showPlanes = true;
-                    updateSessionSettings();
-                  });
-                },
-                child: Container(
-                    decoration: BoxDecoration(
-                      color: Color(0xffffffff)
-                    ),
-                    child: Text('update')),
-              ),
-            )
+          Align(
+            alignment: AlignmentDirectional(.8, .8),
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _showPlanes = true;
+                  updateSessionSettings();
+                });
+              },
+              child: Container(
+                  decoration: BoxDecoration(color: Color(0xffffffff)),
+                  child: Text('update')),
+            ),
+          )
 /*
           Align(
             alignment: FractionalOffset.bottomCenter,
@@ -123,11 +123,12 @@ class _ObjectGesturesWidgetState extends State<ObjectGesturesWidget> {
     /*nodes.forEach((node) {
       this.arObjectManager.removeNode(node);
     });*/
-    anchors.forEach((anchor) {
-      this.arAnchorManager!.removeAnchor(anchor);
-    });
+    for (var anchor in anchors) {
+      arAnchorManager!.removeAnchor(anchor);
+    }
     anchors = [];
   }
+
   // Future<void> copyAssetModelsToDocumentDirectory() async {
   //   // CHANGE THESE TO YOUR ASSET FILES
   //   List<String> filesToCopy = ["assets/office_chair.glb",];
@@ -167,9 +168,9 @@ class _ObjectGesturesWidgetState extends State<ObjectGesturesWidget> {
     if (singleHitTestResult != null) {
       var newAnchor =
           ARPlaneAnchor(transformation: singleHitTestResult.worldTransform);
-      bool? didAddAnchor = await this.arAnchorManager!.addAnchor(newAnchor);
+      bool? didAddAnchor = await arAnchorManager!.addAnchor(newAnchor);
       if (didAddAnchor!) {
-        this.anchors.add(newAnchor);
+        anchors.add(newAnchor);
         // Add note to anchor
         var newNode = ARNode(
             type: NodeType.fileSystemAppFolderGLB,
@@ -178,19 +179,19 @@ class _ObjectGesturesWidgetState extends State<ObjectGesturesWidget> {
                 // "https://huggingface.co/spaces/rajkumar1611/01-3DModel-GradioDemo/blob/33428b234bf914ac88ec47c61d502464ebda3e7b/files/Duck.glb",
                 // 'office_chair.glb',
                 // 'files_Duck.glb',
-               widget.glbFile,
+                widget.glbFile,
             scale: Vector3(0.5, 0.5, 0.5),
             position: Vector3(0.0, 0.0, 0.0),
             rotation: Vector4(1.0, 0.0, 0.0, 0.0));
-        bool? didAddNodeToAnchor =
-            await this.arObjectManager!.addNode(newNode, planeAnchor: newAnchor);
+        bool? didAddNodeToAnchor = await arObjectManager!
+            .addNode(newNode, planeAnchor: newAnchor);
         if (didAddNodeToAnchor!) {
-          this.nodes.add(newNode);
+          nodes.add(newNode);
         } else {
-          this.arSessionManager!.onError("Adding Node to Anchor failed");
+          arSessionManager!.onError("Adding Node to Anchor failed");
         }
       } else {
-        this.arSessionManager!.onError("Adding Anchor failed");
+        arSessionManager!.onError("Adding Anchor failed");
       }
     }
   }
@@ -206,7 +207,7 @@ class _ObjectGesturesWidgetState extends State<ObjectGesturesWidget> {
   onPanEnded(String nodeName, Matrix4 newTransform) {
     print("Ended panning node " + nodeName);
     final pannedNode =
-        this.nodes.firstWhere((element) => element.name == nodeName);
+        nodes.firstWhere((element) => element.name == nodeName);
 
     /*
     * Uncomment the following command if you want to keep the transformations of the Flutter representations of the nodes up to date
@@ -226,7 +227,7 @@ class _ObjectGesturesWidgetState extends State<ObjectGesturesWidget> {
   onRotationEnded(String nodeName, Matrix4 newTransform) {
     print("Ended rotating node " + nodeName);
     final rotatedNode =
-        this.nodes.firstWhere((element) => element.name == nodeName);
+        nodes.firstWhere((element) => element.name == nodeName);
 
     /*
     * Uncomment the following command if you want to keep the transformations of the Flutter representations of the nodes up to date
@@ -234,6 +235,7 @@ class _ObjectGesturesWidgetState extends State<ObjectGesturesWidget> {
     */
     //rotatedNode.transform = newTransform;
   }
+
   void updateSessionSettings() {
     arSessionManager!.onInitialize(
       showFeaturePoints: _showFeaturePoints,
